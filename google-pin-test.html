@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Select Location on Map</title>
+    <meta charset="utf-8" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC93OUyq_If_Yy90UDnX04-3SoSm67ow6Q"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+        background: #f9f9f9;
+      }
+      #map {
+        height: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+        border: 2px solid #ccc;
+      }
+      #instruction {
+        margin-bottom: 10px;
+        font-size: 1.1em;
+      }
+      button {
+        background-color: #4285F4;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:disabled {
+        background-color: #bbb;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Select a location on the map</h2>
+    <p id="instruction">Click anywhere on the map to drop a pin. Then click the button below to fill out the form.</p>
+    <div id="map"></div>
+    <button id="openForm" disabled>Open Form with Selected Location</button>
+
+    <script>
+      let map;
+      let marker;
+      let selectedLatLng = null;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 35.6895, lng: 139.6917 }, // Tokyo
+          zoom: 10,
+        });
+
+        map.addListener("click", (e) => {
+          if (marker) {
+            marker.setMap(null);
+          }
+
+          marker = new google.maps.Marker({
+            position: e.latLng,
+            map: map,
+          });
+
+          selectedLatLng = e.latLng;
+          document.getElementById("openForm").disabled = false;
+        });
+      }
+
+      document.getElementById("openForm").addEventListener("click", () => {
+        if (selectedLatLng) {
+          const lat = selectedLatLng.lat().toFixed(6);
+          const lng = selectedLatLng.lng().toFixed(6);
+          const encoded = encodeURIComponent(`${lat}, ${lng}`);
+          const formURL = `https://docs.google.com/forms/d/1ED7OdGFnp7V981sHEYNXKWImOEQ1KZgyqDk4buNAv1g/viewform?usp=pp_url&entry.1282787884=${encoded}`;
+          window.open(formURL, "_blank");
+        }
+      });
+
+      window.onload = initMap;
+    </script>
+  </body>
+</html>
